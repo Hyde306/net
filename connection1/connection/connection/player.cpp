@@ -4,8 +4,6 @@
 
 CPlayer::CPlayer()
 {
-    pos.x = 300;
-    pos.y = 400;
 }
 
 int CPlayer::Action(const ObjList& base, ObjList& add_base)

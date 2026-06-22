@@ -34,43 +34,47 @@ CGame::CGame(CManager* p) :CScene(p){
 CGame::CGame(CManager* p,ObjList carry) :CScene(p) {
 }
 
+//サーバー側
 //更新処理
-int CGame::UpDate(){
+int CGame::UpDate() {
 	if (NetHandle == -1)
 	{
-		//新しい接続の確認
 		NetHandle = GetNewAcceptNetWork();
-		return 0;
 	}
-	else {
-		//接続受付終了
+	else
+	{
 		StopListenNetWork();
-		//接続してきたPCのアドレス取得
 		GetNetWorkIP(NetHandle, &ip);
-	}
 
-	//データ受信
-	//指定したネットワークハンドルの通信データを取得
-	DataLength = GetNetWorkDataLength(NetHandle);
-	if (DataLength > 0) {
-		//データ受信処理
-		COMDATA data;//受信したデータ
-		//データ受信
-		NetWorkRecv(NetHandle, strBuf, sizeof(COMDATA));
-		//処理可能データに変換
-     	memcpy_s(&data, sizeof(COMDATA), strBuf, sizeof(COMDATA));
+		// 通信処理
+		DataLength = GetNetWorkDataLength(NetHandle);
 
-		//データ更新
-		//base[0].get()->pos = data.pos;
-		for (auto& b : base) {
-			if (b->ID == (int)ObjID::PLAYER)
-			{
-				//プレイヤーオブジェクトの位置更新
-				((CPlayer*)base[0].get())->vec = data.vec;
-			}
+		if (DataLength >= sizeof(COMDATA))
+		{
+			COMDATA recvData;
+
+			NetWorkRecv(NetHandle, strBuf, sizeof(COMDATA));
+
+			memcpy_s(
+				&recvData,
+				sizeof(COMDATA),
+				strBuf,
+				sizeof(COMDATA));
+
+			((CPlayer*)base[1].get())->vec = recvData.vec;
+
+			COMDATA sendData{};
+			sendData.vec = ((CPlayer*)base[0].get())->vec;
+
+			memcpy_s(
+				strBuf,
+				sizeof(COMDATA),
+				&sendData,
+				sizeof(COMDATA));
+
+			NetWorkSend(NetHandle, strBuf, sizeof(COMDATA));
 		}
 	}
-
 	//更新処理
 	ObjList add_list;//追加処理用オブジェクトリスト
 	for (auto& obj : base)

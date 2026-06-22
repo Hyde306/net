@@ -9,17 +9,15 @@ CPlayer::CPlayer()
 
 int CPlayer::Action(const ObjList& base, ObjList& add_base)
 {
-    if (!isLocal)
+    if (isLocal)
     {
-        return 0;
-    }
+        vec.y += 0.4f;
 
-    vec.y += 0.4f;
-
-    if (CheckHitKey(KEY_INPUT_SPACE) && onGround)
-    {
-        vec.y = -8.0f;
-        onGround = false;
+        if (CheckHitKey(KEY_INPUT_SPACE) && onGround)
+        {
+            vec.y = -8.0f;
+            onGround = false;
+        }
     }
 
     pos.y += vec.y;

@@ -9,6 +9,7 @@
 IPDATA IP_set();//IPアドレス入力関数
 IPDATA ip;//接続先のIPアドレス
 
+int DataLength{ -1 };//データサイ
 int NetHandle{ -1 };//ネットワークハンドル
 char strBuf[256];
 
@@ -21,8 +22,8 @@ CGame::CGame(CManager* p) :CScene(p){
 	base.push_back(make_unique<CPlayer>()); // 相手
 	base.push_back(make_unique<CPlayer>()); // 自分
 
-	((CPlayer*)base[0].get())->isLocal = false;
-	((CPlayer*)base[1].get())->isLocal = true;
+	((CPlayer*)base[0].get())->isLocal = true;
+	((CPlayer*)base[1].get())->isLocal = false;
 
 	((CPlayer*)base[0].get())->pos.x = 200;
 	((CPlayer*)base[0].get())->pos.y = 400;
@@ -33,6 +34,7 @@ CGame::CGame(CManager* p) :CScene(p){
 CGame::CGame(CManager* p,ObjList carry) :CScene(p) {
 }
 
+//クライアント側
 //更新処理
 int CGame::UpDate(){
 	//更新処理
@@ -54,7 +56,28 @@ int CGame::UpDate(){
 	erase_if(base, [](const auto& obj) {return !obj->FLAG; });
 
 	//オブジェクトのソート処理(クイックソート)指定したインデックス間
-	ObjSort_Quick(base, 0, base.size() - 1);
+	
+	// サーバーからのデータ受信
+	DataLength = GetNetWorkDataLength(NetHandle);
+
+	if (DataLength >= sizeof(COMDATA))
+	{
+		COMDATA data;
+
+		NetWorkRecv(
+			NetHandle,
+			strBuf,
+			sizeof(COMDATA));
+
+		memcpy_s(
+			&data,
+			sizeof(COMDATA),
+			strBuf,
+			sizeof(COMDATA));
+
+		// 相手プレイヤー更新
+		((CPlayer*)base[0].get())->vec = data.vec;
+	}
 
 	//何か動きがあった場合のみ通信
 	if (send_flag)
