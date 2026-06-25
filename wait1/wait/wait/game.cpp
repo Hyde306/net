@@ -35,62 +35,48 @@ CGame::CGame(CManager* p,ObjList carry) :CScene(p) {
 }
 
 //サーバー側
-//更新処理
-int CGame::UpDate() {
-	if (NetHandle == -1)
-	{
-		NetHandle = GetNewAcceptNetWork();
-	}
-	else
-	{
-		StopListenNetWork();
-		GetNetWorkIP(NetHandle, &ip);
+int CGame::UpDate()
+{
+    if (NetHandle == -1)
+    {
+        NetHandle = GetNewAcceptNetWork();
+        return 0;
+    }
 
-		// 通信処理
-		DataLength = GetNetWorkDataLength(NetHandle);
+    StopListenNetWork();
+    GetNetWorkIP(NetHandle, &ip);
 
-		if (DataLength >= sizeof(COMDATA))
-		{
-			COMDATA recvData;
+    // ライアントからの受信
+    DataLength = GetNetWorkDataLength(NetHandle);
 
-			NetWorkRecv(NetHandle, strBuf, sizeof(COMDATA));
+    if (DataLength >= sizeof(COMDATA))
+    {
+        COMDATA recvData;
+        NetWorkRecv(NetHandle, strBuf, sizeof(COMDATA));
+        memcpy(&recvData, strBuf, sizeof(COMDATA));
 
-			memcpy_s(
-				&recvData,
-				sizeof(COMDATA),
-				strBuf,
-				sizeof(COMDATA));
+        base[1]->pos = recvData.pos;
+        base[1]->vec = recvData.vec;
+    }
 
-			((CPlayer*)base[1].get())->vec = recvData.vec;
+    // サーバー側のキャラを送信
+    COMDATA sendData{};
+    sendData.pos = base[0]->pos;
+    sendData.vec = base[0]->vec;
 
-			COMDATA sendData{};
-			sendData.vec = ((CPlayer*)base[0].get())->vec;
+    memcpy(strBuf, &sendData, sizeof(COMDATA));
+    NetWorkSend(NetHandle, strBuf, sizeof(COMDATA));
 
-			memcpy_s(
-				strBuf,
-				sizeof(COMDATA),
-				&sendData,
-				sizeof(COMDATA));
+    // 更新処理
+    ObjList add_list;
 
-			NetWorkSend(NetHandle, strBuf, sizeof(COMDATA));
-		}
-	}
-	//更新処理
-	ObjList add_list;//追加処理用オブジェクトリスト
-	for (auto& obj : base)
-	obj->Action(base,add_list);
-	//オブジェクト追加処理
-	for (auto& obj : add_list)
-		base.push_back(move(obj));
+    base[0]->Action(base, add_list); // 自分
+    base[1]->Action(base, add_list); // 相手
 
-	//削除処理
-	erase_if(base, [](const auto& obj) {return !obj->FLAG; });
-
-	//オブジェクトのソート処理(クイックソート)指定したインデックス間
-	ObjSort_Quick(base, 0, base.size() - 1);
-
-	return 0;
+    return 0;
 }
+
+
 
 //描画処理
 void CGame::Draw()
@@ -106,8 +92,6 @@ void CGame::Draw()
 		"この端末のIPアドレス %d:%d:%d:%d",
 		ip.d1, ip.d2, ip.d3, ip.d4
 	);
-	////オブジェクト個数
-	//DrawFormatString(0, 0, GetColor(255, 255, 255), "Object_Count = %d", base.size());
 	
 	for (auto& obj : base) obj->Draw();
 }

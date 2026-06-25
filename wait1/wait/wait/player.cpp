@@ -9,24 +9,24 @@ CPlayer::CPlayer()
 
 int CPlayer::Action(const ObjList& base, ObjList& add_base)
 {
+    // --- 重力 ---
+    vec.y += 0.4f;
+    pos.y += vec.y;
+
+    // --- 自分のキャラだけ入力処理 ---
     if (isLocal)
     {
-        vec.y += 0.4f;
-
-        if (CheckHitKey(KEY_INPUT_SPACE) && onGround)
+        // ジャンプは「落下していないとき」だけ許可
+        if (CheckHitKey(KEY_INPUT_SPACE) && vec.y >= 0)
         {
             vec.y = -8.0f;
-            onGround = false;
         }
     }
 
-    pos.y += vec.y;
-
-    if (pos.y >= 400)
+    // --- アウト判定 ---
+    if (pos.y > 480)
     {
-        pos.y = 400;
-        vec.y = 0;
-        onGround = true;
+        FLAG = false;
     }
 
     return 1;

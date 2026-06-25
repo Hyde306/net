@@ -22,8 +22,8 @@ CGame::CGame(CManager* p) :CScene(p){
 	base.push_back(make_unique<CPlayer>()); // 相手
 	base.push_back(make_unique<CPlayer>()); // 自分
 
-	((CPlayer*)base[0].get())->isLocal = true;
-	((CPlayer*)base[1].get())->isLocal = false;
+	((CPlayer*)base[0].get())->isLocal = false; 
+	((CPlayer*)base[1].get())->isLocal = true;  
 
 	((CPlayer*)base[0].get())->pos.x = 200;
 	((CPlayer*)base[0].get())->pos.y = 400;
@@ -35,65 +35,43 @@ CGame::CGame(CManager* p,ObjList carry) :CScene(p) {
 }
 
 //クライアント側
-//更新処理
-int CGame::UpDate(){
-	//更新処理
-	ObjList add_list;//追加処理用オブジェクトリスト
+int CGame::UpDate()
+{
+    ObjList add_list;
+    bool send_flag = false;
 
-	bool send_flag{ false };//送信するしないフラグ
-	//オブジェクト更新処理
-	for (auto& obj : base)
-	{
-		if (obj->Action(base, add_list))
-			send_flag = true;
-	}
+    if (base[1]->Action(base, add_list))
+        send_flag = true;
 
-	//オブジェクト追加処理
-	for (auto& obj : add_list)
-		base.push_back(move(obj));
+    // サーバーからの受信
+    DataLength = GetNetWorkDataLength(NetHandle);
 
-	//削除処理
-	erase_if(base, [](const auto& obj) {return !obj->FLAG; });
+    if (DataLength >= sizeof(COMDATA))
+    {
+        COMDATA data;
+        NetWorkRecv(NetHandle, strBuf, sizeof(COMDATA));
+        memcpy(&data, strBuf, sizeof(COMDATA));
 
-	//オブジェクトのソート処理(クイックソート)指定したインデックス間
-	
-	// サーバーからのデータ受信
-	DataLength = GetNetWorkDataLength(NetHandle);
+        base[0]->pos = data.pos;
+        base[0]->vec = data.vec;
+    }
 
-	if (DataLength >= sizeof(COMDATA))
-	{
-		COMDATA data;
+    base[0]->Action(base, add_list);
 
-		NetWorkRecv(
-			NetHandle,
-			strBuf,
-			sizeof(COMDATA));
+    // 自分のキャラのデータ送信
+    if (send_flag)
+    {
+        COMDATA data{};
+        data.pos = base[1]->pos;
+        data.vec = base[1]->vec;
 
-		memcpy_s(
-			&data,
-			sizeof(COMDATA),
-			strBuf,
-			sizeof(COMDATA));
+        memcpy(strBuf, &data, sizeof(COMDATA));
+        NetWorkSend(NetHandle, strBuf, sizeof(COMDATA));
+    }
 
-		// 相手プレイヤー更新
-		((CPlayer*)base[0].get())->vec = data.vec;
-	}
-
-	//何か動きがあった場合のみ通信
-	if (send_flag)
-	{
-		//通信処理
-		//送信データの作成
-		COMDATA data{ 0 };
-		data.vec = base[1].get()->vec;		//送信バイナリデータの作成
-		memcpy_s(strBuf, sizeof(COMDATA), &data, sizeof(COMDATA));
-
-		//データ送信
-		NetWorkSend(NetHandle, strBuf, sizeof(COMDATA));
-	}
-
-	return 0;
+    return 0;
 }
+
 
 //描画処理
 void CGame::Draw()
