@@ -44,6 +44,7 @@ struct Vector3 {
  typedef struct COMDATA {
 	 Point pos{ 0,0 };
 	 Vector vec{ 0,0 };
+	 float scrollX;
  }; COMDATA;
 
 //ƒJƒƒ‰î•ñƒNƒ‰ƒX(main.h)

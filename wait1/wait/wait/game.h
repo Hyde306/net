@@ -7,6 +7,8 @@
 class CGame :public CScene
 {
 private:
+	float scrollX = 0;
+	int bgHandle;
 public:
 	//オブジェクト
 	ObjList base;

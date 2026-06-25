@@ -18,6 +18,8 @@ CGame::CGame(CManager* p) :CScene(p){
 	//接続受付状態
 	PreparationListenNetWork(40);//通信ポート指定
 
+    bgHandle = LoadGraph("ipset_image/Back.jpg");
+
 	base.push_back(make_unique<CPlayer>()); // 自分
 	base.push_back(make_unique<CPlayer>()); // 相手
 
@@ -37,6 +39,8 @@ CGame::CGame(CManager* p,ObjList carry) :CScene(p) {
 //サーバー側
 int CGame::UpDate()
 {
+    scrollX += 3;   // 3px/フレームで右→左に流れる
+
     if (NetHandle == -1)
     {
         NetHandle = GetNewAcceptNetWork();
@@ -57,12 +61,15 @@ int CGame::UpDate()
 
         base[1]->pos = recvData.pos;
         base[1]->vec = recvData.vec;
+
+        scrollX = recvData.scrollX;
     }
 
     // サーバー側のキャラを送信
     COMDATA sendData{};
     sendData.pos = base[0]->pos;
     sendData.vec = base[0]->vec;
+    sendData.scrollX = scrollX;
 
     memcpy(strBuf, &sendData, sizeof(COMDATA));
     NetWorkSend(NetHandle, strBuf, sizeof(COMDATA));
@@ -81,6 +88,8 @@ int CGame::UpDate()
 //描画処理
 void CGame::Draw()
 {
+    DrawGraph(0, 0, bgHandle, TRUE);
+
 	IPDATA IP;
 	//起動端末のIPアドレス取得
 	GetMyIPAddress(&IP, 1, NULL);
@@ -93,7 +102,7 @@ void CGame::Draw()
 		ip.d1, ip.d2, ip.d3, ip.d4
 	);
 	
-	for (auto& obj : base) obj->Draw();
+	for (auto& obj : base) obj->Draw(scrollX);
 }
 
 CGame::~CGame()

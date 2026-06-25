@@ -8,7 +8,7 @@ public:
 	CPlayer();
 
 	int Action(const ObjList&, ObjList&);
-	void Draw();
+	void Draw(float scrollX);
 
 	bool isLocal = false;
 	bool onGround = false;

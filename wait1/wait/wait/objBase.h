@@ -47,7 +47,7 @@ public:
 
 	//オブジェクトリスト,追加オブジェクト用リスト
 	virtual int Action(const ObjList&, ObjList&) = 0;
-	virtual void Draw() = 0;
+	virtual void Draw(float scrollX) = 0;
 	virtual ~BaseVector() = default;
 };
 

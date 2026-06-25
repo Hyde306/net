@@ -9,6 +9,7 @@ CPlayer::CPlayer()
 
 int CPlayer::Action(const ObjList& base, ObjList& add_base)
 {
+
     // --- èdóÕ ---
     vec.y += 0.4f;
     pos.y += vec.y;
@@ -32,14 +33,7 @@ int CPlayer::Action(const ObjList& base, ObjList& add_base)
     return 1;
 }
 
-void CPlayer::Draw()
+void CPlayer::Draw(float scrollX)
 {
-	DrawCircle(pos.x, pos.y, 32, 0xff0000, true);
-    DrawFormatString(
-        pos.x - 20,
-        pos.y - 50,
-        0xffffff,
-        "%d",
-        isLocal
-    );
+    DrawCircle(pos.x, pos.y, 32, 0xff0000, TRUE);
 }

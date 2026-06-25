@@ -19,6 +19,8 @@ CGame::CGame(CManager* p) :CScene(p){
 	//指定したIPアドレス＆ポートに接続
 	NetHandle = ConnectNetWork(ip, 40);
 
+    bgHandle = LoadGraph("ipset_image/Back.jpg");
+
 	base.push_back(make_unique<CPlayer>()); // 相手
 	base.push_back(make_unique<CPlayer>()); // 自分
 
@@ -37,6 +39,7 @@ CGame::CGame(CManager* p,ObjList carry) :CScene(p) {
 //クライアント側
 int CGame::UpDate()
 {
+
     ObjList add_list;
     bool send_flag = false;
 
@@ -54,6 +57,8 @@ int CGame::UpDate()
 
         base[0]->pos = data.pos;
         base[0]->vec = data.vec;
+
+        scrollX = data.scrollX;
     }
 
     base[0]->Action(base, add_list);
@@ -64,6 +69,7 @@ int CGame::UpDate()
         COMDATA data{};
         data.pos = base[1]->pos;
         data.vec = base[1]->vec;
+        data.scrollX = scrollX;
 
         memcpy(strBuf, &data, sizeof(COMDATA));
         NetWorkSend(NetHandle, strBuf, sizeof(COMDATA));
@@ -76,10 +82,11 @@ int CGame::UpDate()
 //描画処理
 void CGame::Draw()
 {
+    DrawGraph(0, 0, bgHandle, TRUE);
 	//オブジェクト個数
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "Object_Count = %d", base.size());
 	
-	for (auto& obj : base) obj->Draw();
+	for (auto& obj : base) obj->Draw(scrollX);
 }
 
 CGame::~CGame()
