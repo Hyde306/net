@@ -9,12 +9,9 @@ CPlayer::CPlayer()
 
 int CPlayer::Action(const ObjList& base, ObjList& add_base)
 {
-
-    // --- 重力 ---
     vec.y += 0.4f;
     pos.y += vec.y;
 
-    // --- 自分のキャラだけ入力処理 ---
     if (isLocal)
     {
         // ジャンプは「落下していないとき」だけ許可
@@ -24,7 +21,6 @@ int CPlayer::Action(const ObjList& base, ObjList& add_base)
         }
     }
 
-    // --- アウト判定 ---
     if (pos.y > 480)
     {
         FLAG = false;
