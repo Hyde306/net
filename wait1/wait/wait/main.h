@@ -18,8 +18,8 @@ using namespace std;
 #define DEGREE(_rad) ((float)(_rad)*180.0f/M_PI)
 
 //基本ウィンドウサイズ
-constexpr auto WINDOW_WIDTH = 800;	//ウィンドウ横幅
-constexpr auto WINDOW_HEIGHT = 600;	//ウィンドウ縦幅
+constexpr auto WINDOW_WIDTH = 640;	//ウィンドウ横幅
+constexpr auto WINDOW_HEIGHT = 480;	//ウィンドウ縦幅
 
 //2D用
  struct Point {
