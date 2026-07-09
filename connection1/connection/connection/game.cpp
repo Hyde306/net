@@ -82,8 +82,17 @@ int CGame::UpDate()
 //描画処理
 void CGame::Draw()
 {
-    DrawGraph(0, 0, bgHandle, TRUE);
-	//オブジェクト個数
+    DrawRectGraph(
+        0,
+        0,
+        (int)scrollX,
+        0,
+        640,
+        480,
+        bgHandle,
+        TRUE,
+        FALSE
+    );	//オブジェクト個数
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "Object_Count = %d", base.size());
 	
 	for (auto& obj : base) obj->Draw(scrollX);

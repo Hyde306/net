@@ -41,6 +41,10 @@ int CGame::UpDate()
 {
     scrollX += 3;   // 3px/フレームで右→左に流れる
 
+    if (scrollX > 1280)   // 1920 - 640
+    {
+        scrollX = 0;
+    }
     if (NetHandle == -1)
     {
         NetHandle = GetNewAcceptNetWork();
@@ -61,8 +65,6 @@ int CGame::UpDate()
 
         base[1]->pos = recvData.pos;
         base[1]->vec = recvData.vec;
-
-        scrollX = recvData.scrollX;
     }
 
     // サーバー側のキャラを送信
@@ -88,8 +90,17 @@ int CGame::UpDate()
 //描画処理
 void CGame::Draw()
 {
-    DrawGraph(0, 0, bgHandle, TRUE);
-
+    DrawRectGraph(
+        0,
+        0,
+        (int)scrollX,
+        0,
+        640,
+        480,
+        bgHandle,
+        TRUE,
+        FALSE
+    );
 	IPDATA IP;
 	//起動端末のIPアドレス取得
 	GetMyIPAddress(&IP, 1, NULL);
