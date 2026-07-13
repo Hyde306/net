@@ -66,6 +66,10 @@ int CGame::UpDate()
 
         base[1]->pos = recvData.pos;
         base[1]->vec = recvData.vec;
+        if (base[1]->FLAG)   // 生きている時だけ更新
+        {
+            base[1]->FLAG = !recvData.dead1;
+        }
     }
 
     // サーバー側のキャラを送信
@@ -73,6 +77,9 @@ int CGame::UpDate()
     sendData.pos = base[0]->pos;
     sendData.vec = base[0]->vec;
     sendData.scrollX = scrollX;
+
+    sendData.dead0 = !base[0]->FLAG;
+    sendData.dead1 = !base[1]->FLAG;
 
     memcpy(strBuf, &sendData, sizeof(COMDATA));
     NetWorkSend(NetHandle, strBuf, sizeof(COMDATA));

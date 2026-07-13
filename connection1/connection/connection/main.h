@@ -45,6 +45,10 @@ struct Vector3 {
 	 Point pos{ 0,0 };
 	 Vector vec{ 0,0 };
 	 float scrollX;
+	 
+	 bool dead0;    // サーバー側プレイヤー(base[0])
+	 bool dead1;    // クライアント側プレイヤー(base[1])
+
  }; COMDATA;
 
 

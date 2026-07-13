@@ -5,6 +5,7 @@
 #include "function.h"
 
 #include"player.h"
+#include"square.h"
 
 IPDATA IP_set();//IPアドレス入力関数
 IPDATA ip;//接続先のIPアドレス
@@ -23,6 +24,7 @@ CGame::CGame(CManager* p) :CScene(p){
 
 	base.push_back(make_unique<CPlayer>()); // 相手
 	base.push_back(make_unique<CPlayer>()); // 自分
+    base.push_back(make_unique<CSquare>());
 
 	((CPlayer*)base[0].get())->isLocal = false; 
 	((CPlayer*)base[1].get())->isLocal = true;  
@@ -59,6 +61,9 @@ int CGame::UpDate()
         base[0]->vec = data.vec;
 
         scrollX = data.scrollX;
+
+        base[0]->FLAG = !data.dead0;
+        base[1]->FLAG = !data.dead1;
     }
 
     base[0]->Action(base, add_list);
@@ -70,6 +75,9 @@ int CGame::UpDate()
         data.pos = base[1]->pos;
         data.vec = base[1]->vec;
         data.scrollX = scrollX;
+
+        data.dead0 = !base[0]->FLAG;
+        data.dead1 = !base[1]->FLAG;
 
         memcpy(strBuf, &data, sizeof(COMDATA));
         NetWorkSend(NetHandle, strBuf, sizeof(COMDATA));

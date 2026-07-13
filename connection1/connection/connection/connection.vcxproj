@@ -167,6 +167,7 @@
     <ClInclude Include="player.h" />
     <ClInclude Include="Scene_Base.h" />
     <ClInclude Include="Scene_Manager.h" />
+    <ClInclude Include="square.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3D_function.cpp" />
@@ -177,6 +178,7 @@
     <ClCompile Include="library_function.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="player.cpp" />
+    <ClCompile Include="square.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
