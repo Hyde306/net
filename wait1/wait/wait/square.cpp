@@ -1,0 +1,36 @@
+#include "square.h"
+#include "DxLib.h"
+
+CSquare::CSquare()
+{
+    ID = 100;
+
+    pos.x = 500;
+    pos.y = 0;
+}
+
+int CSquare::Action(const ObjList&, ObjList&)
+{
+    return 0;
+}
+
+void CSquare::Draw(float)
+{
+    // è„ÇÃíå
+    DrawBox(
+        pos.x,
+        0,
+        pos.x + 80,
+        180,
+        GetColor(0, 255, 0),
+        TRUE);
+
+    // â∫ÇÃíå
+    DrawBox(
+        pos.x,
+        300,
+        pos.x + 80,
+        480,
+        GetColor(0, 255, 0),
+        TRUE);
+}

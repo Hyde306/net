@@ -3,7 +3,7 @@
 #include "Scene_Manager.h"
 #include "game.h"
 #include "function.h"
-
+#include "square.h"
 #include"player.h"
 
 int NetHandle{ -1 };//ネットワークハンドル
@@ -22,6 +22,7 @@ CGame::CGame(CManager* p) :CScene(p){
 
 	base.push_back(make_unique<CPlayer>()); // 自分
 	base.push_back(make_unique<CPlayer>()); // 相手
+    base.push_back(make_unique<CSquare>());
 
 	((CPlayer*)base[0].get())->isLocal = true;
 	((CPlayer*)base[1].get())->isLocal = false;
