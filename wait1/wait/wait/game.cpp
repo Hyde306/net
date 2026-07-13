@@ -80,8 +80,10 @@ int CGame::UpDate()
     // XVˆ—
     ObjList add_list;
 
-    base[0]->Action(base, add_list); // ©•ª
-    base[1]->Action(base, add_list); // ‘Šè
+    for (auto& obj : base)
+    {
+        obj->Action(base, add_list);
+    }
 
     return 0;
 }

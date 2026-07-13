@@ -11,6 +11,13 @@ CSquare::CSquare()
 
 int CSquare::Action(const ObjList&, ObjList&)
 {
+    pos.x -= 3;
+
+    if (pos.x < -80)
+    {
+        pos.x = 900;
+    }
+
     return 0;
 }
 
